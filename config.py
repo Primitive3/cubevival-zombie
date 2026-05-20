@@ -49,6 +49,9 @@ T_FLOOR = 3
 T_DOOR = 4
 T_TREE = 5
 T_WATER = 6
+T_RUBBLE = 7
+T_DEBRIS = 8
+T_CAR = 9
 
 TILE_COLORS = {
     T_GRASS: (60, 120, 50),
@@ -58,9 +61,12 @@ TILE_COLORS = {
     T_DOOR: (160, 130, 80),
     T_TREE: (30, 80, 20),
     T_WATER: (40, 80, 140),
+    T_RUBBLE: (90, 75, 55),
+    T_DEBRIS: (110, 100, 80),
+    T_CAR: (130, 60, 40),
 }
 
-TILE_VARIATIONS = 8
+TILE_VARIATIONS = 16
 
 # Colors
 BLACK = (0, 0, 0)
