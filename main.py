@@ -397,7 +397,7 @@ def render_weather_particles(surf, world):
                 p[0] = random.uniform(0, RENDER_W)
             else:
                 alpha = 80 + int(80 * world.rain_intensity)
-                pygame.draw.line(surf, (160 + alpha // 2, 180 + alpha // 2, 220 + alpha // 3), (px, py), (int(px - math.cos(world.wind_dir) * 3), int(py - 4)), 1)
+                pygame.draw.line(surf, (min(255, 160 + alpha // 2), min(255, 180 + alpha // 2), min(255, 220 + alpha // 3)), (px, py), (int(px - math.cos(world.wind_dir) * 3), int(py - 4)), 1)
 
     if world.weather in (WEATHER_WIND, WEATHER_STORM):
         for p in _wind_particles:
@@ -412,7 +412,7 @@ def render_weather_particles(surf, world):
                 p[1] = random.uniform(0, RENDER_H)
             if 0 <= px < RENDER_W and 0 <= py < RENDER_H:
                 alpha = 40 + int(40 * world.wind_strength)
-                pygame.draw.line(surf, (180 + alpha, 180 + alpha, 160 + alpha), (px, py), (int(px - p[2] * 3), int(py - p[3])), 1)
+                pygame.draw.line(surf, (min(255, 180 + alpha), min(255, 180 + alpha), min(255, 160 + alpha)), (px, py), (int(px - p[2] * 3), int(py - p[3])), 1)
 
 def get_weather_text(weather):
     if weather == WEATHER_CLEAR:
