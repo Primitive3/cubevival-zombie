@@ -1,0 +1,4 @@
+staticSites:
+  - name: sobreviviente-sin-cv
+    buildCommand: ""
+    publishDirectory: website
