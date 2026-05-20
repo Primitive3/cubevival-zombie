@@ -15,6 +15,12 @@ class World:
         self.spawn_timer = 0
         self.game_day = 1
         self._last_vpos = (-1, -1)
+        self.weather = WEATHER_CLEAR
+        self.weather_timer = random.randint(600, 3600)
+        self.rain_intensity = 0.0
+        self.wind_dir = 0.0
+        self.wind_strength = 0.0
+        self.weather_particles = []
         if not load:
             self.generate()
 
@@ -111,8 +117,11 @@ class World:
             row = self.tiles[y]
             for x in range(MAP_W):
                 if row[x] == T_GRASS:
-                    if random.random() < 0.03:
+                    r = random.random()
+                    if r < 0.03:
                         row[x] = T_TREE
+                    elif r < 0.07:
+                        row[x] = T_BUSH
 
     def _make_building(self, sx, sy, w, h):
         if w < 4 or h < 4:
@@ -143,10 +152,13 @@ class World:
             row = self.tiles[y]
             for x in range(sx, sx + w):
                 if y < MAP_H and x < MAP_W:
-                    if random.random() < 0.15:
+                    r = random.random()
+                    if r < 0.12:
                         row[x] = T_TREE
-                    elif random.random() < 0.08:
-                        row[x] = T_TREE
+                    elif r < 0.25:
+                        row[x] = T_BUSH
+                    elif r < 0.30:
+                        row[x] = T_WATER
 
     def _make_lshape_building(self, sx, sy, w, h):
         if w < 6 or h < 6:
@@ -208,10 +220,12 @@ class World:
                 r = random.random()
                 if r < 0.2:
                     self.tiles[y][x] = T_RUBBLE
-                elif r < 0.35:
+                elif r < 0.30:
                     self.tiles[y][x] = T_DEBRIS
-                elif r < 0.45:
+                elif r < 0.40:
                     self.tiles[y][x] = T_TREE
+                elif r < 0.50:
+                    self.tiles[y][x] = T_BUSH
 
     def _place_building_loot(self, sx, sy, w, h):
         for ry in range(sy + 1, sy + h - 1):
@@ -253,6 +267,8 @@ class World:
             self.time -= CYCLE_LENGTH
             self.game_day += 1
             player.days_survived = self.game_day
+
+        self.update_weather()
 
         vx, vy = int(player.x), int(player.y)
         if (vx, vy) != self._last_vpos:
@@ -324,6 +340,23 @@ class World:
         if self.time < DAY_LENGTH:
             return 0.0
         return min(1.0, (self.time - DAY_LENGTH) / NIGHT_LENGTH)
+
+    def update_weather(self):
+        self.weather_timer -= 1
+        if self.weather_timer <= 0:
+            self.weather = random.choice([WEATHER_CLEAR, WEATHER_RAIN, WEATHER_WIND, WEATHER_STORM])
+            self.weather_timer = random.randint(600, 3600)
+            if self.weather == WEATHER_RAIN:
+                self.rain_intensity = random.uniform(0.3, 1.0)
+            elif self.weather == WEATHER_STORM:
+                self.rain_intensity = random.uniform(0.7, 1.0)
+                self.wind_strength = random.uniform(0.4, 1.0)
+            elif self.weather == WEATHER_WIND:
+                self.wind_strength = random.uniform(0.3, 1.0)
+            else:
+                self.rain_intensity = 0.0
+                self.wind_strength = 0.0
+            self.wind_dir = random.uniform(0, math.pi * 2)
 
     def get_spawn_point(self):
         for _ in range(50):

@@ -100,9 +100,9 @@ class HUD:
             surf.blit(FONT_SM.render(fl_text, True, fl_color), (10, y))
 
     def _draw_minimap(self, surf, player, world):
-        mm_size = 120
-        mm_x = SCREEN_W - mm_size - 10
-        mm_y = 10
+        mm_size = 90
+        mm_x = RENDER_W - mm_size - 8
+        mm_y = 8
         scale = mm_size / max(MAP_W, MAP_H)
 
         explored_count = sum(sum(row) for row in world.explored)
@@ -147,11 +147,11 @@ class HUD:
 
     def _draw_inventory(self, surf, player):
         if self._panel_bg is None:
-            ov = pygame.Surface((SCREEN_W, SCREEN_H), pygame.SRCALPHA)
+            ov = pygame.Surface((RENDER_W, RENDER_H), pygame.SRCALPHA)
             ov.fill((0, 0, 0, 180))
             self._panel_bg = ov
         surf.blit(self._panel_bg, (0, 0))
-        px, py, pw, ph = SCREEN_W // 2 - 200, SCREEN_H // 2 - 180, 400, 360
+        px, py, pw, ph = RENDER_W // 2 - 150, RENDER_H // 2 - 140, 300, 280
         pygame.draw.rect(surf, (30, 30, 40), (px, py, pw, ph))
         pygame.draw.rect(surf, WHITE, (px, py, pw, ph), 2)
         t = FONT_LG.render("INVENTARIO", True, WHITE)
@@ -177,11 +177,11 @@ class HUD:
 
     def _draw_crafting(self, surf, player):
         if self._panel_bg is None:
-            ov = pygame.Surface((SCREEN_W, SCREEN_H), pygame.SRCALPHA)
+            ov = pygame.Surface((RENDER_W, RENDER_H), pygame.SRCALPHA)
             ov.fill((0, 0, 0, 180))
             self._panel_bg = ov
         surf.blit(self._panel_bg, (0, 0))
-        px, py, pw, ph = SCREEN_W // 2 - 200, SCREEN_H // 2 - 180, 400, 360
+        px, py, pw, ph = RENDER_W // 2 - 150, RENDER_H // 2 - 140, 300, 280
         pygame.draw.rect(surf, (30, 30, 40), (px, py, pw, ph))
         pygame.draw.rect(surf, WHITE, (px, py, pw, ph), 2)
         t = FONT_LG.render("CRAFTING", True, WHITE)
@@ -200,11 +200,11 @@ class HUD:
         surf.blit(FONT_SM.render(f"Presiona [1-{len(RECIPES)}] | C cerrar", True, YELLOW), (px + 20, py + ph - 30))
 
     def _draw_messages(self, surf):
-        yo = SCREEN_H - 80
+        yo = RENDER_H - 60
         for msg in self.messages[-5:]:
             t = FONT_SM.render(msg, True, WHITE)
-            surf.blit(t, (12, yo))
-            yo += 18
+            surf.blit(t, (8, yo))
+            yo += 14
 
     def _draw_controls(self, surf):
         if self._ctrl_labels is None:
@@ -222,7 +222,7 @@ class HUD:
                 "1-8   Usar/Equipar",
             ]
             self._ctrl_labels = [FONT_SM.render(l, True, (140, 140, 140)) for l in lines]
-        yo = SCREEN_H - 260
+        yo = RENDER_H - 220
         for t in self._ctrl_labels:
-            surf.blit(t, (SCREEN_W - 210, yo))
-            yo += 14
+            surf.blit(t, (RENDER_W - 160, yo))
+            yo += 12
