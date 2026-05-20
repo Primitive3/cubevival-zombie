@@ -1,2 +1,9 @@
-*
-!website/**
+*.py
+*.bat
+*.md
+__pycache__/
+saves/
+dist/
+.git/
+.gitignore
+.github/
