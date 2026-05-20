@@ -42,15 +42,15 @@ class World:
                 if bx + BLOCK >= MAP_W or by + BLOCK >= MAP_H:
                     continue
                 r = random.random()
-                if r < 0.55:
+                if r < 0.65:
                     self._make_building(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
-                elif r < 0.70:
+                elif r < 0.78:
                     self._make_building(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
-                    if random.random() < 0.5:
+                    if random.random() < 0.25:
                         self._destroy_building(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
-                elif r < 0.80:
+                elif r < 0.86:
                     self._make_park(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
-                elif r < 0.88:
+                elif r < 0.94:
                     self._make_pond(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
                 else:
                     self._make_empty_lot(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
@@ -81,35 +81,30 @@ class World:
             for x in range(sx, sx + w):
                 if y >= MAP_H or x >= MAP_W:
                     continue
-                if self.tiles[y][x] in (T_WALL, T_FLOOR, T_DOOR):
-                    if random.random() < 0.5:
-                        self.tiles[y][x] = T_RUBBLE
-                    else:
-                        self.tiles[y][x] = T_DEBRIS
-        for _ in range(random.randint(2, 5)):
+                if self.tiles[y][x] == T_WALL and random.random() < 0.2:
+                    self.tiles[y][x] = T_RUBBLE
+                elif self.tiles[y][x] == T_FLOOR and random.random() < 0.1:
+                    self.tiles[y][x] = T_DEBRIS
+        for _ in range(random.randint(1, 3)):
             rx = random.randint(sx, sx + w - 1)
             ry = random.randint(sy, sy + h - 1)
             if 0 <= rx < MAP_W and 0 <= ry < MAP_H:
                 self.tiles[ry][rx] = T_RUBBLE
 
     def _place_wrecked_cars(self):
-        for _ in range(int(MAP_W * MAP_H * 0.003)):
+        for _ in range(int(MAP_W * MAP_H * 0.001)):
             x = random.randint(1, MAP_W - 2)
             y = random.randint(1, MAP_H - 2)
             if self.tiles[y][x] == T_ROAD:
                 self.tiles[y][x] = T_CAR
-                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    nx, ny = x + dx, y + dy
-                    if 0 <= nx < MAP_W and 0 <= ny < MAP_H and random.random() < 0.3:
-                        self.tiles[ny][nx] = T_DEBRIS
 
     def _place_debris(self):
         for y in range(1, MAP_H - 1):
             row = self.tiles[y]
             for x in range(1, MAP_W - 1):
-                if row[x] not in (T_ROAD, T_GRASS, T_FLOOR):
+                if row[x] not in (T_ROAD, T_GRASS):
                     continue
-                if random.random() < 0.08:
+                if random.random() < 0.02:
                     row[x] = T_DEBRIS
 
     def _place_dead_trees(self):
@@ -218,13 +213,13 @@ class World:
                 if y >= MAP_H or x >= MAP_W:
                     continue
                 r = random.random()
-                if r < 0.2:
+                if r < 0.05:
                     self.tiles[y][x] = T_RUBBLE
-                elif r < 0.30:
+                elif r < 0.12:
                     self.tiles[y][x] = T_DEBRIS
-                elif r < 0.40:
+                elif r < 0.22:
                     self.tiles[y][x] = T_TREE
-                elif r < 0.50:
+                elif r < 0.32:
                     self.tiles[y][x] = T_BUSH
 
     def _place_building_loot(self, sx, sy, w, h):

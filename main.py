@@ -32,47 +32,37 @@ def _make_tile_surface(tile, var):
     pygame.draw.rect(s, c, (0, 0, TILE, TILE))
     if tile == T_GRASS:
         v4 = var & 3
-        grass_rects = [(6, 6, 4, 4), (18, 4, 3, 3), (4, 18, 5, 3), (22, 22, 4, 4)]
-        pygame.draw.rect(s, (50, 105, 40), grass_rects[v4])
-        if var < 8:
-            for fx, fy in ((4, 12), (20, 6), (26, 22), (10, 26), (12, 4)):
-                if var % 3 == fx % 3:
-                    pygame.draw.circle(s, ((fx * 37 + fy * 13) % 60 + 180, (fx * 7 + fy * 17) % 40 + 140, (fx * 11 + fy * 5) % 30 + 30), (fx, fy), 1)
-        else:
-            for sx, sy in ((8, 22), (24, 10), (4, 18), (16, 6), (28, 16)):
-                pygame.draw.rect(s, ((var * 20 + sx) % 40 + 80, (var * 15 + sy) % 40 + 70, (var * 10 + sx + sy) % 30 + 40), (sx, sy, 2, 2))
-        if var & 4:
-            for _fi in range(2):
-                fx = (_fi * 17 + var * 11) % 26 + 3
-                fy = (_fi * 13 + var * 7) % 26 + 3
-                pygame.draw.circle(s, ((var * 30 + 200) % 55 + 200, (var * 20 + 150) % 80 + 80, (var * 10 + 180) % 70 + 50), (fx, fy), 1)
-                pygame.draw.circle(s, ((var * 25 + 220) % 60 + 180, (var * 15 + 170) % 70 + 100, (var * 5 + 190) % 50 + 60), (fx + 2, fy + 1), 1)
+        grass_clumps = [(8, 8, 5, 4), (20, 5, 4, 4), (5, 20, 5, 4), (24, 22, 5, 4)]
+        for dx, dy in ((3, 12), (14, 3), (25, 14), (9, 26), (18, 26)):
+            pygame.draw.circle(s, ((var * 7 + dx * 3) % 30 + 45, (var * 11 + dy * 5) % 25 + 100, (var * 5 + dx * 7) % 15 + 35), (dx, dy), 1)
+        pygame.draw.rect(s, (48, 108, 38), grass_clumps[v4])
+        if var & 1:
+            for fi in range(2):
+                fx = (fi * 19 + var * 7) % 26 + 3
+                fy = (fi * 23 + var * 13) % 26 + 3
+                pygame.draw.circle(s, ((var * 30 + 220) % 50 + 200, (var * 20 + 170) % 60 + 90, (var * 10 + 200) % 50 + 50), (fx, fy), 1)
+                pygame.draw.circle(s, ((var * 25 + 230) % 45 + 195, (var * 15 + 180) % 50 + 100, (var * 5 + 210) % 40 + 55), (fx + 1, fy + 1), 1)
     elif tile == T_ROAD:
         v4 = var & 3
         if v4 == 0:
-            for cx in (6, 16, 26):
+            for cx in (8, 16, 24):
                 pygame.draw.rect(s, (90, 90, 90), (cx, 0, 2, TILE))
         elif v4 == 1:
             pygame.draw.rect(s, (100, 100, 80), (13, 15, 6, 2))
-            for cx in (4, 24):
-                pygame.draw.rect(s, (60, 60, 60), (cx, 8, 3, 3))
+            for cx in (6, 22):
+                pygame.draw.rect(s, (60, 60, 60), (cx, 10, 3, 3))
                 pygame.draw.rect(s, (60, 60, 60), (cx, 20, 3, 3))
         elif v4 == 2:
             for cx in (2, 10, 18, 26):
                 pygame.draw.line(s, (50, 50, 50), (cx, 0), (cx, TILE))
-            for cy in (6, 12, 18, 24):
-                pygame.draw.line(s, (70, 70, 70), (0, cy), (TILE, cy))
         else:
-            pygame.draw.rect(s, (100, 60, 40), (8, 10, 16, 12))
-            for dx, dy in ((4, 4), (20, 18), (6, 24), (24, 6)):
-                pygame.draw.rect(s, (60, 50, 40), (dx, dy, 4, 2))
-        if var >= 8:
-            for sx, sy in ((2 + var % 4, (var * 3) % 28), (20 + var % 3, (var * 7) % 24)):
-                pygame.draw.rect(s, (130, 40, 40), (sx, sy, 3, 2))
-        for si in range(3):
-            sx = (si * 11 + var * 7) % 26 + 2
-            sy = (si * 13 + var * 3) % 26 + 2
-            pygame.draw.rect(s, (85, 85, 85), (sx, sy, 4, 1))
+            for cx in (4, 20):
+                pygame.draw.rect(s, (85, 85, 85), (cx, 0, 2, TILE))
+        if var >= 8 and var < 12:
+            for si in range(2):
+                sx = (si * 15 + var * 5) % 24 + 4
+                sy = (si * 11 + var * 7) % 20 + 6
+                pygame.draw.rect(s, (95, 95, 95), (sx, sy, 4, 2))
     elif tile == T_WALL:
         v4 = var & 3
         wall_base = (140, 90, 55)
@@ -190,21 +180,13 @@ def _make_tile_surface(tile, var):
                 pygame.draw.line(s, (60, 40, 25), (16, 20), (bx, by), 1)
     elif tile == T_WATER:
         v4 = var & 3
-        for wx, wy in ((6, 3), (18, 11), (10, 22), (24, 17)):
-            pygame.draw.rect(s, (50 + v4 * 10, 90 - v4 * 15, 150 - v4 * 20), (wx, wy + (var & 1) * 2, 6, 3))
-        if var & 4:
-            for sx in range(0, TILE, 8):
-                cl = (min(255, 60 + var * 5), max(0, 100 - var * 8), max(0, 160 - var * 10))
-                pygame.draw.line(s, cl, (sx, var % 4 * 2), (sx + 4, var % 4 * 2 + 2), 1)
-        if var >= 8:
-            for ss in range(3):
-                sx = (ss * 11 + var * 7) % 28
-                sy = (ss * 13 + var * 3) % 24 + 2
-                pygame.draw.rect(s, ((var * 30 + 100) % 100 + 80, (var * 20 + 80) % 80 + 100, 100), (sx, sy, 4, 2))
-        for wi in range(2):
-            wx = (wi * 19 + var * 11) % 28
-            wy = (wi * 23 + var * 7) % 24 + 4
-            pygame.draw.rect(s, (40 + var * 3, 70 - var * 2, 130 + var * 3), (wx, wy, 5, 2))
+        for wi in range(3):
+            wx = (wi * 13 + var * 7) % 28
+            wy = (wi * 17 + var * 11) % 24 + 4
+            pygame.draw.rect(s, (45 + wi * 15 + var * 3, 80 + wi * 5 - var * 5, 140 + wi * 5 - var * 8), (wx, wy + (var & 1), 7, 2))
+        for sx in range(2, TILE, 10):
+            cl = (min(255, 55 + var * 8), max(0, 95 - var * 6), max(0, 155 - var * 8))
+            pygame.draw.line(s, cl, (sx, 8 + var % 3), (sx + 6, 8 + var % 3 + 1), 1)
     elif tile == T_RUBBLE:
         c2 = TILE_COLORS[T_RUBBLE]
         pygame.draw.rect(s, tuple(max(0, v - 20) for v in c2), (0, 0, TILE, TILE))
