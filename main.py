@@ -75,74 +75,73 @@ def _make_tile_surface(tile, var):
             pygame.draw.rect(s, (85, 85, 85), (sx, sy, 4, 1))
     elif tile == T_WALL:
         v4 = var & 3
+        wall_base = (140, 90, 55)
+        shadow = (90, 55, 30)
+        roof = (100, 65, 40)
+        pygame.draw.rect(s, wall_base, (0, 0, TILE, TILE))
+        pygame.draw.rect(s, shadow, (0, 0, TILE, 3))
+        pygame.draw.rect(s, shadow, (0, TILE - 2, TILE, 2))
+        pygame.draw.rect(s, shadow, (0, 0, 2, TILE))
         if v4 == 0:
-            for ly in (7, 15, 23):
-                pygame.draw.rect(s, (110, 90, 70), (0, ly, TILE, 2))
-            pygame.draw.rect(s, (90, 70, 50), (15, 0, 2, TILE))
-            if var >= 8:
-                for wx in (2, 10, 20, 28):
-                    pygame.draw.rect(s, (130, 110, 80), (wx, 12, 4, 2))
+            for ly in (6, 14, 22):
+                pygame.draw.line(s, roof, (0, ly), (TILE, ly), 2)
+            pygame.draw.rect(s, roof, (12, 4, 8, 2))
         elif v4 == 1:
-            pygame.draw.rect(s, (130, 120, 110), (0, 0, TILE, TILE))
-            pygame.draw.rect(s, (140, 130, 120), (0, 0, TILE, TILE), 1)
+            pygame.draw.rect(s, (150, 110, 75), (2, 4, 4, 4))
             for ly in (8, 16, 24):
-                pygame.draw.line(s, (120, 110, 100), (0, ly), (TILE, ly))
+                pygame.draw.line(s, roof, (0, ly), (TILE, ly))
             for lx in (8, 16, 24):
-                pygame.draw.line(s, (120, 110, 100), (lx, 0), (lx, TILE))
+                pygame.draw.line(s, roof, (lx, 0), (lx, TILE))
         elif v4 == 2:
-            for ly in (7, 15, 23):
-                pygame.draw.rect(s, (110, 90, 70), (0, ly, TILE, 2))
-            pygame.draw.rect(s, (90, 70, 50), (15, 0, 2, TILE))
-            for wx in (4, 20):
-                pygame.draw.rect(s, (80, 60, 40), (wx, 5, 6, 8))
+            pygame.draw.rect(s, roof, (0, 6, TILE, 2))
+            pygame.draw.rect(s, roof, (0, 14, TILE, 2))
+            pygame.draw.rect(s, roof, (0, 22, TILE, 2))
+            for wx in (3, 11, 19):
+                pygame.draw.rect(s, (120, 75, 45), (wx, 8, 4, 5))
         else:
-            for ly in (7, 15, 23):
-                pygame.draw.rect(s, (110, 90, 70), (0, ly, TILE, 2))
-            pygame.draw.rect(s, (90, 70, 50), (15, 0, 2, TILE))
-            pygame.draw.rect(s, (60, 40, 30), (8, 10, 16, 12))
+            pygame.draw.rect(s, roof, (0, 6, TILE, 2))
+            pygame.draw.rect(s, roof, (0, 14, TILE, 2))
+            pygame.draw.rect(s, (120, 75, 45), (6, 8, 5, 5))
+            pygame.draw.rect(s, (120, 75, 45), (18, 8, 5, 5))
         if var >= 8:
-            gx = 4 + (var * 5) % 20
+            gx = 4 + (var * 5) % 16
             gy = 2 + (var * 3) % 8
-            for ly in range(gy, gy + 8, 3):
-                for lx in range(gx, gx + 8, 4):
-                    pygame.draw.rect(s, (180, 50, 50), (lx, ly, 2, 2))
-        for wi in range(3):
-            wx = (wi * 9 + var * 5) % 28
-            wy = (wi * 7 + var * 3) % 24 + 4
-            pygame.draw.rect(s, ((var * 20 + wi * 30) % 30 + 90, (var * 15 + wi * 20) % 25 + 75, (var * 10 + wi * 15) % 20 + 55), (wx, wy, 3, 2))
+            for ly in range(gy, gy + 6, 3):
+                for lx in range(gx, gx + 6, 4):
+                    pygame.draw.rect(s, (50, 40, 30), (lx, ly, 3, 2))
     elif tile == T_FLOOR:
         v4 = var & 3
+        floor_base = (195, 170, 135)
+        pygame.draw.rect(s, floor_base, (0, 0, TILE, TILE))
         if v4 == 0:
-            pygame.draw.rect(s, (170, 150, 120), (4, 4, 3, 3))
-            pygame.draw.rect(s, (190, 170, 140), (20, 18, 3, 3))
-        elif v4 == 1:
             for ly in range(0, TILE, 8):
                 for lx in range(0, TILE, 16):
-                    c2 = (160, 140, 110) if (lx + ly) % 32 == 0 else (190, 170, 140)
+                    c2 = (170, 145, 110) if (lx + ly) % 32 == 0 else (205, 180, 145)
                     pygame.draw.rect(s, c2, (lx, ly, 16, 8))
+        elif v4 == 1:
+            for ly in (6, 14, 22):
+                pygame.draw.line(s, (170, 145, 110), (0, ly), (TILE, ly), 2)
+            pygame.draw.rect(s, (160, 120, 80), (4, 4, 3, 3))
+            pygame.draw.rect(s, (180, 140, 100), (20, 18, 3, 3))
         elif v4 == 2:
-            for ly in range(0, TILE, 6):
-                pygame.draw.line(s, (160, 140, 110), (0, ly), (TILE, ly))
-                pygame.draw.line(s, (200, 180, 150), (0, ly + 3), (TILE, ly + 3))
-            pygame.draw.rect(s, (120, 80, 50), (2, 6, 28, 20))
-            pygame.draw.rect(s, (140, 100, 70), (4, 8, 24, 16), 1)
+            for r in range(5):
+                rx = (r * 6 + var * 3) % 24 + 4
+                ry = (r * 8 + var * 5) % 24 + 4
+                pygame.draw.rect(s, ((var * 20 + r * 30) % 30 + 160, (var * 10 + r * 20) % 25 + 140, (var * 5 + r * 15) % 20 + 115), (rx, ry, 5, 5))
         else:
-            for r in range(4):
-                rx = (r * 7 + var * 3) % 28
-                ry = (r * 11 + var * 5) % 28
-                pygame.draw.rect(s, ((var * 20 + r * 30) % 40 + 60, (var * 10 + r * 20) % 30 + 40, 30), (rx, ry, 4, 4))
+            for ly in range(0, TILE, 8):
+                for lx in range(0, TILE, 8):
+                    c2 = (175, 150, 115) if (lx // 8 + ly // 8) % 2 == 0 else (210, 185, 150)
+                    pygame.draw.rect(s, c2, (lx, ly, 8, 8))
         if var >= 8:
-            for si in range(3):
-                sx = (si * 13 + var * 7) % 28
-                sy = (si * 17 + var * 11) % 24
-                pygame.draw.rect(s, (80, 70, 60), (sx, sy, 4, 2))
-        for fi in range(2):
-            fx = (fi * 17 + var * 5) % 26 + 2
-            fy = (fi * 13 + var * 7) % 26 + 2
-            pygame.draw.rect(s, ((var * 30 + fi * 40) % 30 + 150, (var * 20 + fi * 30) % 25 + 130, (var * 10 + fi * 20) % 20 + 110), (fx, fy, 3, 2))
+            for si in range(2):
+                sx = (si * 15 + var * 7) % 24 + 4
+                sy = (si * 19 + var * 11) % 24 + 4
+                pygame.draw.rect(s, (140, 110, 80), (sx, sy, 5, 3))
     elif tile == T_DOOR:
         v4 = var & 3
-        base = (160, 130, 80) if v4 == 0 else (120, 90, 60) if v4 == 1 else (140, 100, 70) if v4 == 2 else (100, 70, 50)
+        base = (170, 130, 70) if v4 == 0 else (130, 90, 50) if v4 == 1 else (150, 100, 60) if v4 == 2 else (100, 70, 50)
+        pygame.draw.rect(s, (100, 70, 40), (2, 2, TILE - 4, TILE - 4))
         pygame.draw.rect(s, base, (4, 4, TILE - 8, TILE - 8))
         pygame.draw.rect(s, tuple(max(0, v - 30) for v in base), (14, 8, 4, 16))
         pygame.draw.circle(s, tuple(min(255, v + 30) for v in base), (22, 16), 2)
