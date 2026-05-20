@@ -108,6 +108,50 @@ h1 span {
   line-height: 1.5;
 }
 
+.gallery {
+  margin-bottom: 50px;
+}
+
+.gallery h2 {
+  text-align: center;
+  font-size: 20px;
+  color: #d4a050;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.gallery-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.gallery-item:hover {
+  border-color: rgba(212, 160, 80, 0.4);
+}
+
+.gallery-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.gallery-item p {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+}
+
 .controls {
   margin-bottom: 50px;
 }
