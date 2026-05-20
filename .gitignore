@@ -1,9 +1,9 @@
 __pycache__/
 *.pyc
 *.spec
-*.exe
-dist/
 build/
 saves/
+SobrevivienteSinCV
+*.exe
+dist/
 !dist/SobrevivienteSinCV.exe
-!SobrevivienteSinCV.exe

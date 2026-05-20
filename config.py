@@ -60,6 +60,8 @@ TILE_COLORS = {
     T_WATER: (40, 80, 140),
 }
 
+TILE_VARIATIONS = 8
+
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)

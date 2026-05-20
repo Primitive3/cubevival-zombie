@@ -23,28 +23,67 @@ class World:
             for x in range(MAP_W):
                 self.tiles[y][x] = T_GRASS
 
-        for y in range(MAP_H):
-            for x in range(MAP_W):
-                if y % BLOCK in (0, 1) or x % BLOCK in (0, 1):
-                    self.tiles[y][x] = T_ROAD
+        self._make_roads()
 
         for by in range(BLOCK, MAP_H, BLOCK):
             for bx in range(BLOCK, MAP_W, BLOCK):
                 if bx + BLOCK >= MAP_W or by + BLOCK >= MAP_H:
                     continue
                 r = random.random()
-                if r < 0.55:
+                if r < 0.50:
                     self._make_building(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
-                elif r < 0.70:
+                elif r < 0.60:
                     self._make_park(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
+                elif r < 0.68:
+                    self._make_lshape_building(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
+                elif r < 0.73:
+                    self._make_garden(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
+                elif r < 0.78:
+                    self._make_pond(bx + 1, by + 1, BLOCK - 2, BLOCK - 2)
 
+        self._place_plants()
+        self._place_start_items()
+
+    def _make_roads(self):
+        road_hash = {}
+        for y in range(MAP_H):
+            for x in range(MAP_W):
+                if y % BLOCK in (0, 1) or x % BLOCK in (0, 1):
+                    road_hash[(x, y)] = True
+
+        for cy in range(BLOCK, MAP_H, BLOCK):
+            for cx in range(BLOCK, MAP_W, BLOCK):
+                offset_x = random.choice([0, 0, 0, 1, -1])
+                offset_y = random.choice([0, 0, 0, 1, -1])
+                for dx in range(-1, 2):
+                    for dy in range(-1, 2):
+                        nx = cx + BLOCK // 2 + dx * 2 + offset_x
+                        ny = cy + BLOCK // 2 + dy * 2 + offset_y
+                        if 0 <= nx < MAP_W and 0 <= ny < MAP_H:
+                            road_hash[(nx, ny)] = True
+
+        for (x, y) in road_hash:
+            if 0 <= x < MAP_W and 0 <= y < MAP_H:
+                self.tiles[y][x] = T_ROAD
+                for dx, dy in ((1, 0), (0, 1), (-1, 0), (0, -1)):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < MAP_W and 0 <= ny < MAP_H and (nx, ny) not in road_hash:
+                        if random.random() < 0.3:
+                            self.tiles[ny][nx] = T_ROAD
+
+    def _place_plants(self):
         for y in range(MAP_H):
             row = self.tiles[y]
             for x in range(MAP_W):
-                if row[x] == T_GRASS and random.random() < 0.03:
+                if row[x] != T_GRASS:
+                    continue
+                r = random.random()
+                if r < 0.04:
                     row[x] = T_TREE
-
-        self._place_start_items()
+                elif r < 0.06:
+                    row[x] = T_TREE
+                    if random.random() < 0.3:
+                        pass
 
     def _make_building(self, sx, sy, w, h):
         if w < 4 or h < 4:
@@ -68,6 +107,71 @@ class World:
                     if random.random() < 0.12:
                         self.tiles[ry][rx] = T_GRASS
 
+        self._place_building_loot(sx, sy, w, h)
+
+    def _make_park(self, sx, sy, w, h):
+        for y in range(sy, sy + h):
+            row = self.tiles[y]
+            for x in range(sx, sx + w):
+                if y < MAP_H and x < MAP_W:
+                    if random.random() < 0.15:
+                        row[x] = T_TREE
+                    elif random.random() < 0.08:
+                        row[x] = T_TREE
+
+    def _make_lshape_building(self, sx, sy, w, h):
+        if w < 6 or h < 6:
+            return self._make_building(sx, sy, w, h)
+        cut = random.randint(2, max(2, w // 3))
+        for y in range(sy, sy + h):
+            for x in range(sx, sx + w):
+                if y >= MAP_H or x >= MAP_W:
+                    continue
+                in_l = (y < sy + h - cut and x < sx + w - cut) or (y >= sy + h - cut) or (x >= sx + w - cut)
+                if not in_l:
+                    continue
+                if y in (sy, sy + h - 1) or x in (sx, sx + w - 1) or (y == sy + h - cut - 1 and x >= sx + w - cut) or (x == sx + w - cut - 1 and y >= sy + h - cut):
+                    if not (y == sy + h - cut - 1 and x == sx + w - cut - 1):
+                        self.tiles[y][x] = T_WALL if random.random() < 0.7 else T_WALL
+                    else:
+                        self.tiles[y][x] = T_FLOOR
+                else:
+                    self.tiles[y][x] = T_FLOOR
+        dx = sx + w // 2
+        dy = sy + h - 1
+        if dy < MAP_H and dx < MAP_W:
+            self.tiles[dy][dx] = T_DOOR
+        self._place_building_loot(sx, sy, w, h)
+
+    def _make_garden(self, sx, sy, w, h):
+        for y in range(sy, sy + h):
+            row = self.tiles[y]
+            for x in range(sx, sx + w):
+                if y >= MAP_H or x >= MAP_W:
+                    continue
+                r = random.random()
+                if r < 0.25:
+                    row[x] = T_TREE
+                elif r < 0.35:
+                    pass
+
+    def _make_pond(self, sx, sy, w, h):
+        cx = sx + w // 2
+        cy = sy + h // 2
+        r = min(w, h) // 2 - 1
+        for y in range(sy, sy + h):
+            for x in range(sx, sx + w):
+                if y >= MAP_H or x >= MAP_W:
+                    continue
+                d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+                if d < r:
+                    self.tiles[y][x] = T_WATER
+                elif d < r + 1:
+                    self.tiles[y][x] = T_GRASS
+                    if random.random() < 0.3:
+                        self.tiles[y][x] = T_TREE
+
+    def _place_building_loot(self, sx, sy, w, h):
         for ry in range(sy + 1, sy + h - 1):
             for rx in range(sx + 1, sx + w - 1):
                 r2 = random.random()
@@ -75,13 +179,6 @@ class World:
                     self.items.append(ItemDrop(rx, ry, random.choice(["food", "water", "cloth", "wood", "metal", "alcohol"])))
                 elif r2 < 0.11:
                     self.items.append(ItemDrop(rx, ry, random.choice(["bat", "medkit", "ammo", "book"])))
-
-    def _make_park(self, sx, sy, w, h):
-        for y in range(sy, sy + h):
-            row = self.tiles[y]
-            for x in range(sx, sx + w):
-                if y < MAP_H and x < MAP_W:
-                    row[x] = T_TREE if random.random() < 0.15 else T_GRASS
 
     def _place_start_items(self):
         cx, cy = MAP_W // 2, MAP_H // 2

@@ -31,37 +31,113 @@ def _make_tile_surface(tile, var):
     c = TILE_COLORS[tile]
     pygame.draw.rect(s, c, (0, 0, TILE, TILE))
     if tile == T_GRASS:
-        if var & 1:
+        if var < 4:
+            if var & 1:
+                pygame.draw.rect(s, (50, 105, 40), (6, 6, 4, 4))
+            if var & 2:
+                pygame.draw.rect(s, (40, 95, 30), (18, 20, 3, 3))
+        elif var < 6:
             pygame.draw.rect(s, (50, 105, 40), (6, 6, 4, 4))
-        if var & 2:
             pygame.draw.rect(s, (40, 95, 30), (18, 20, 3, 3))
+            for fx, fy in ((4, 12), (20, 6), (26, 22)):
+                pygame.draw.circle(s, (220, 180, 60), (fx, fy), 2)
+        else:
+            pygame.draw.rect(s, (50, 105, 40), (6, 6, 4, 4))
+            pygame.draw.rect(s, (40, 95, 30), (18, 20, 3, 3))
+            for sx, sy in ((8, 22), (24, 10), (4, 18)):
+                pygame.draw.circle(s, (100, 100, 100), (sx, sy), 2)
     elif tile == T_ROAD:
-        pygame.draw.rect(s, (100, 100, 100), (14, 2, 4, 3))
-        pygame.draw.rect(s, (100, 100, 100), (14, 14, 4, 3))
-        pygame.draw.rect(s, (100, 100, 100), (14, 26, 4, 3))
+        if var < 4:
+            pygame.draw.rect(s, (100, 100, 100), (14, 2, 4, 3))
+            pygame.draw.rect(s, (100, 100, 100), (14, 14, 4, 3))
+            pygame.draw.rect(s, (100, 100, 100), (14, 26, 4, 3))
+        elif var < 6:
+            for cx in (6, 16, 26):
+                pygame.draw.rect(s, (90, 90, 90), (cx, 0, 2, TILE))
+        else:
+            pygame.draw.rect(s, (110, 110, 80), (13, 15, 6, 2))
+            for cx in (4, 24):
+                pygame.draw.rect(s, (60, 60, 60), (cx, 8, 3, 3))
+                pygame.draw.rect(s, (60, 60, 60), (cx, 20, 3, 3))
     elif tile == T_WALL:
-        for ly in (7, 15, 23):
-            pygame.draw.rect(s, (110, 90, 70), (0, ly, TILE, 2))
-        pygame.draw.rect(s, (90, 70, 50), (15, 0, 2, TILE))
+        if var < 3:
+            for ly in (7, 15, 23):
+                pygame.draw.rect(s, (110, 90, 70), (0, ly, TILE, 2))
+            pygame.draw.rect(s, (90, 70, 50), (15, 0, 2, TILE))
+            if var == 2:
+                for wx in (2, 10, 20, 28):
+                    pygame.draw.rect(s, (130, 110, 80), (wx, 12, 4, 2))
+        elif var < 5:
+            pygame.draw.rect(s, (130, 120, 110), (0, 0, TILE, TILE))
+            pygame.draw.rect(s, (140, 130, 120), (0, 0, TILE, TILE), 1)
+            for ly in (8, 16, 24):
+                pygame.draw.line(s, (120, 110, 100), (0, ly), (TILE, ly))
+            for lx in (8, 16, 24):
+                pygame.draw.line(s, (120, 110, 100), (lx, 0), (lx, TILE))
+        else:
+            for ly in (7, 15, 23):
+                pygame.draw.rect(s, (110, 90, 70), (0, ly, TILE, 2))
+            pygame.draw.rect(s, (90, 70, 50), (15, 0, 2, TILE))
+            if var == 6:
+                for wx in (4, 20):
+                    pygame.draw.rect(s, (80, 60, 40), (wx, 5, 6, 8))
+            else:
+                pygame.draw.rect(s, (60, 40, 30), (8, 10, 16, 12))
     elif tile == T_FLOOR:
-        pygame.draw.rect(s, (170, 150, 120), (4, 4, 3, 3))
-        pygame.draw.rect(s, (190, 170, 140), (20, 18, 3, 3))
+        if var < 3:
+            pygame.draw.rect(s, (170, 150, 120), (4, 4, 3, 3))
+            pygame.draw.rect(s, (190, 170, 140), (20, 18, 3, 3))
+        elif var < 5:
+            for ly in range(0, TILE, 8):
+                for lx in range(0, TILE, 16):
+                    c2 = (160, 140, 110) if (lx + ly) % 32 == 0 else (190, 170, 140)
+                    pygame.draw.rect(s, c2, (lx, ly, 16, 8))
+        else:
+            for ly in range(0, TILE, 6):
+                pygame.draw.line(s, (160, 140, 110), (0, ly), (TILE, ly))
+                pygame.draw.line(s, (200, 180, 150), (0, ly + 3), (TILE, ly + 3))
+            if var == 6:
+                pygame.draw.rect(s, (120, 80, 50), (2, 6, 28, 20))
+                pygame.draw.rect(s, (140, 100, 70), (4, 8, 24, 16), 1)
     elif tile == T_DOOR:
-        pygame.draw.rect(s, BROWN, (4, 4, TILE - 8, TILE - 8))
-        pygame.draw.rect(s, (120, 90, 60), (14, 8, 4, 16))
-        pygame.draw.circle(s, (200, 180, 140), (22, 16), 2)
+        base = (160, 130, 80) if var < 4 else (120, 90, 60) if var < 6 else (180, 150, 100)
+        pygame.draw.rect(s, base, (4, 4, TILE - 8, TILE - 8))
+        pygame.draw.rect(s, tuple(max(0, v - 30) for v in base), (14, 8, 4, 16))
+        pygame.draw.circle(s, tuple(min(255, v + 30) for v in base), (22, 16), 2)
+        if var >= 4:
+            for ly in (8, 14, 20):
+                pygame.draw.line(s, tuple(max(0, v - 20) for v in base), (8, ly), (12, ly))
     elif tile == T_TREE:
-        pygame.draw.circle(s, (20, 60, 20), (16, 16), 10)
-        pygame.draw.rect(s, (80, 50, 30), (14, 20, 4, 8))
-        pygame.draw.circle(s, (30, 80, 30), (11, 9), 5)
-        pygame.draw.circle(s, (25, 70, 25), (22, 12), 4)
+        if var < 3:
+            pygame.draw.circle(s, (20, 60, 20), (16, 16), 10)
+            pygame.draw.rect(s, (80, 50, 30), (14, 20, 4, 8))
+            pygame.draw.circle(s, (30, 80, 30), (11, 9), 5)
+            pygame.draw.circle(s, (25, 70, 25), (22, 12), 4)
+        elif var < 5:
+            pygame.draw.polygon(s, (15, 55, 15), [(16, 2), (4, 20), (28, 20)])
+            pygame.draw.polygon(s, (20, 65, 20), [(16, 6), (6, 22), (26, 22)])
+            pygame.draw.rect(s, (80, 50, 30), (14, 20, 4, 8))
+        elif var < 7:
+            for bx, by in ((14, 4), (18, 6), (12, 10), (22, 14)):
+                pygame.draw.line(s, (80, 50, 30), (16, 22), (bx, by), 2)
+            for bx, by in ((10, 6), (20, 4), (8, 14), (24, 8)):
+                if var == 5:
+                    pygame.draw.line(s, (80, 60, 40), (bx, by), (bx, by + 4), 1)
+        else:
+            pygame.draw.circle(s, (30, 90, 30), (16, 14), 8)
+            pygame.draw.rect(s, (80, 50, 30), (14, 20, 4, 8))
+            for fx, fy in ((10, 10), (20, 8), (14, 6), (22, 14)):
+                pygame.draw.circle(s, (40, 100, 40), (fx, fy), 3)
     elif tile == T_WATER:
-        pygame.draw.rect(s, (50, 90, 150), (6, 6, 6, 3))
-        pygame.draw.rect(s, (50, 90, 150), (18, 18, 6, 3))
+        for wx, wy in ((6, 3), (18, 11), (10, 22), (24, 17)):
+            pygame.draw.rect(s, (50, 90, 150), (wx, wy + (var & 1) * 2, 6, 3))
+        if var & 2:
+            for sx in range(0, TILE, 8):
+                pygame.draw.line(s, (60, 100, 160), (sx, var % 4 * 2), (sx + 4, var % 4 * 2 + 2), 1)
     return s
 
 def get_tile(tile, x, y):
-    key = (tile, (x * 7 + y * 31) & 3)
+    key = (tile, (x * 13 + y * 37) & (TILE_VARIATIONS - 1))
     if key not in _tile_cache:
         _tile_cache[key] = _make_tile_surface(tile, key[1])
     return _tile_cache[key]
@@ -342,7 +418,7 @@ def main():
                 sx = int(x * TILE - cam_ox)
                 if not row_v[x]:
                     tid = row_t[x]
-                    key = (tid, (x * 7 + y * 31) & 3)
+                    key = (tid, (x * 13 + y * 37) & (TILE_VARIATIONS - 1))
                     if key not in _fog_tile_cache:
                         bc = TILE_COLORS[tid]
                         fs = pygame.Surface((TILE, TILE))
@@ -392,11 +468,6 @@ def main():
             alen = 18 if player.anim_state == "attack" else 12
             cx, cy = px + 14, py + 14
             pygame.draw.line(screen, (150, 200, 255), (cx, cy), (cx + cos_a * alen, cy + sin_a * alen), 3)
-
-        if "_player_label" not in _time_labels:
-            _time_labels["_player_label"] = FONT_SM.render("Martin Rivas", True, WHITE)
-        plabel = _time_labels["_player_label"]
-        screen.blit(plabel, (px + 14 - plabel.get_width() // 2, py - 6))
 
         nf = world.night_factor()
         if nf > 0:
