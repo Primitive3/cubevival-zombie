@@ -17,7 +17,14 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install pygame pyinstaller
-      - run: pyinstaller --onefile --windowed --name "SobrevivienteSinCV" main.py
+      - run: pyinstaller --onefile --windowed --version-file version_info.txt --name "SobrevivienteSinCV" main.py
+      - name: Generate self-signed certificate and sign
+        shell: pwsh
+        run: |
+          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=Sobreviviente Sin CV, O=Personal" -KeyUsage DigitalSignature -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3") -CertStoreLocation "Cert:\CurrentUser\My"
+          $password = ConvertTo-SecureString -String "signpass" -Force -AsPlainText
+          Export-PfxCertificate -Cert $cert -FilePath codesign.pfx -Password $password
+          signtool sign /fd SHA256 /f codesign.pfx /p signpass /tr http://timestamp.digicert.com /td SHA256 dist/SobrevivienteSinCV.exe
       - run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
